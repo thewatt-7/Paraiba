@@ -200,6 +200,66 @@ const css = `
   .loading-step.active .step-dot { background: #2ec4b6; }
   .loading-step.done .step-dot { background: #2ec4b6; }
   .loading-step.done { color: #6b7280; }
+  /* ── RESULTS ── */
+  .results-header { width: 100%; text-align: center; margin-bottom: 28px; }
+  .results-eyebrow {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.2em;
+    text-transform: uppercase; color: #2ec4b6; margin-bottom: 8px;
+  }
+  .results-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; font-weight: 900; color: #1a1a2e;
+  }
+  .result-card {
+    width: 100%; background: #fff; border-radius: 14px;
+    padding: 20px 22px; margin-bottom: 10px;
+    display: flex; flex-direction: column; gap: 8px;
+    cursor: pointer; border: 1.5px solid #ece9e1;
+    transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+  }
+  .result-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.07);
+    border-color: #2ec4b6;
+  }
+  .result-card.top { border-color: #2ec4b6; }
+  .result-top-row { display: flex; justify-content: space-between; align-items: center; }
+  .result-num {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #2ec4b6;
+  }
+  .result-badge {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #2ec4b6;
+    background: rgba(46,196,182,0.1);
+    padding: 4px 10px; border-radius: 20px;
+  }
+  .result-name {
+    font-size: 15px; font-weight: 600; color: #1a1a2e; line-height: 1.3;
+  }
+  .result-desc {
+    font-size: 12px; color: #6b7280; line-height: 1.7; font-weight: 300;
+  }
+  .result-cta {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #2ec4b6; align-self: flex-end;
+    margin-top: 4px;
+  }
+  .error-state {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; gap: 16px;
+  }
+  .error-icon { font-size: 40px; }
+  .error-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: #1a1a2e; }
+  .error-sub { font-size: 13px; color: #6b7280; font-weight: 300; }
+  .error-btn {
+    margin-top: 8px; padding: 12px 32px;
+    background: #1a1a2e; color: #f7f6f2; border: none;
+    border-radius: 3px; font-family: 'Jost', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; cursor: pointer;
+  }
 `
 
 const PLACES = {
@@ -345,12 +405,51 @@ function LoadingPage({ label, step }) {
     </div>
   )
 }
+function ResultsPage({ category, label, onSelect, onBack }) {
+  const places = PLACES[category] || []
+
+  if (places.length === 0) {
+    return (
+      <div className="error-state">
+        <span className="error-icon">🔍</span>
+        <p className="error-title">No results found</p>
+        <p className="error-sub">Try a different category</p>
+        <button className="error-btn" onClick={onBack}>Go Back</button>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <div className="results-header fu">
+        <p className="results-eyebrow">Hidden Gems — {label}</p>
+        <h2 className="results-title">Top 5 local picks</h2>
+      </div>
+      {places.map((p, i) => (
+        <div
+          key={p.id}
+          className={`result-card fu${Math.min(i + 1, 5)}${i === 0 ? " top" : ""}`}
+          onClick={() => onSelect(p)}
+        >
+          <div className="result-top-row">
+            <span className="result-num">#{p.id}</span>
+            <span className="result-badge">Hidden Gem</span>
+          </div>
+          <p className="result-name">{p.name}</p>
+          <p className="result-desc">{p.desc}</p>
+          <span className="result-cta">View details →</span>
+        </div>
+      ))}
+    </>
+  )
+}
 
 export default function App() {
   const [screen, setScreen] = useState("home")
   const [category, setCategory] = useState(null)
   const [label, setLabel] = useState("")
   const [loadStep, setLoadStep] = useState(0)
+  const [place, setPlace] = useState(null)
 
   const goHome = () => { setScreen("home"); setLoadStep(0) }
 
@@ -371,6 +470,7 @@ export default function App() {
         {screen === "home"     && <HomePage onExplore={() => setScreen("category")} />}
         {screen === "category" && <CategoryPage onSelect={handleCategory} onBack={goHome} />}
         {screen === "loading"  && <LoadingPage label={label} step={loadStep} />}
+        {screen === "results"  && <ResultsPage category={category} label={label} onSelect={(p) => { setPlace(p); setScreen("detail") }} onBack={() => setScreen("category")} />}
       </div>
     </>
   )
