@@ -153,6 +153,53 @@ const css = `
     font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
     text-transform: uppercase; color: #1a1a2e;
   }
+    /* ── LOADING ── */
+  .loading {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 0;
+    text-align: center;
+  }
+  .loading-visual {
+    position: relative; width: 80px; height: 80px; margin-bottom: 36px;
+  }
+  .loading-ring {
+    width: 80px; height: 80px; border-radius: 50%;
+    border: 1.5px solid #ece9e1;
+    border-top-color: #2ec4b6;
+    animation: spin 1s linear infinite;
+    position: absolute;
+  }
+  .loading-ring-inner {
+    width: 56px; height: 56px; border-radius: 50%;
+    border: 1.5px solid #ece9e1;
+    border-bottom-color: rgba(46,196,182,0.4);
+    animation: spin 1.6s linear infinite reverse;
+    position: absolute; top: 12px; left: 12px;
+  }
+  .loading-gem-sm { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 20px; }
+  .loading-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px; font-weight: 900; color: #1a1a2e; margin-bottom: 10px;
+  }
+  .loading-sub {
+    font-size: 12px; color: #9ca3af; letter-spacing: 0.1em;
+    text-transform: uppercase; margin-bottom: 36px;
+    animation: pulse 1.8s ease infinite;
+  }
+  .loading-steps { display: flex; flex-direction: column; gap: 10px; width: 260px; }
+  .loading-step {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 12px; color: #9ca3af; font-weight: 400;
+  }
+  .loading-step.active { color: #1a1a2e; font-weight: 500; }
+  .step-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #ece9e1; flex-shrink: 0;
+    transition: background 0.3s;
+  }
+  .loading-step.active .step-dot { background: #2ec4b6; }
+  .loading-step.done .step-dot { background: #2ec4b6; }
+  .loading-step.done { color: #6b7280; }
 `
 
 const PLACES = {
@@ -271,18 +318,49 @@ function CategoryPage({ onSelect, onBack }) {
     </>
   )
 }
+function LoadingPage({ label, step }) {
+  const steps = [
+    { label: "Scraping r/GNV posts", done: step > 0, active: step === 0 },
+    { label: `Extracting ${label} mentions`, done: step > 1, active: step === 1 },
+    { label: "Running sentiment analysis", done: step > 2, active: step === 2 },
+    { label: "Ranking results", done: step > 3, active: step === 3 },
+  ]
+  return (
+    <div className="loading">
+      <div className="loading-visual">
+        <div className="loading-ring" />
+        <div className="loading-ring-inner" />
+        <div className="loading-gem-sm">💎</div>
+      </div>
+      <p className="loading-title">Analyzing discussions</p>
+      <p className="loading-sub">Finding hidden gems for {label}</p>
+      <div className="loading-steps">
+        {steps.map((s, i) => (
+          <div key={i} className={`loading-step${s.active ? " active" : ""}${s.done ? " done" : ""}`}>
+            <div className="step-dot" />
+            {s.done ? "✓ " : ""}{s.label}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export default function App() {
   const [screen, setScreen] = useState("home")
   const [category, setCategory] = useState(null)
   const [label, setLabel] = useState("")
+  const [loadStep, setLoadStep] = useState(0)
 
-  const goHome = () => setScreen("home")
+  const goHome = () => { setScreen("home"); setLoadStep(0) }
 
   const handleCategory = (cat, lbl) => {
-    setCategory(cat)
-    setLabel(lbl)
+    setCategory(cat); setLabel(lbl); setLoadStep(0)
     setScreen("loading")
+    ;[0, 1, 2, 3].forEach(i => {
+      setTimeout(() => setLoadStep(i + 1), 500 + i * 500)
+    })
+    setTimeout(() => setScreen("results"), 2600)
   }
 
   return (
@@ -292,6 +370,7 @@ export default function App() {
       <div className="page" key={screen}>
         {screen === "home"     && <HomePage onExplore={() => setScreen("category")} />}
         {screen === "category" && <CategoryPage onSelect={handleCategory} onBack={goHome} />}
+        {screen === "loading"  && <LoadingPage label={label} step={loadStep} />}
       </div>
     </>
   )
