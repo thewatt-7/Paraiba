@@ -61,6 +61,56 @@ const css = `
     transition: color 0.2s; margin-bottom: 40px;
   }
   .back:hover { color: #1a1a2e; }
+
+  /* ── HOME ── */
+  .home {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding-top: 20px; gap: 0;
+  }
+  .home-eyebrow {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.22em;
+    text-transform: uppercase; color: #2ec4b6; margin-bottom: 18px;
+  }
+  .home-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 5vw, 48px); font-weight: 900;
+    line-height: 1.1; color: #1a1a2e; margin-bottom: 18px;
+    white-space: nowrap;
+  }
+  .home-title em { font-style: italic; color: #2ec4b6; font-weight: 700; }
+  .home-sub {
+    font-size: 14px; color: #6b7280; line-height: 1.8;
+    max-width: 360px; font-weight: 300; margin-bottom: 36px;
+  }
+  .home-btn {
+    padding: 15px 48px; background: #1a1a2e; color: #f7f6f2;
+    border: none; border-radius: 3px;
+    font-family: 'Jost', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+  .home-btn:hover {
+    background: #2ec4b6;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(46,196,182,0.3);
+  }
+  .home-stats {
+    display: flex; gap: 40px; margin-top: 52px;
+    padding-top: 40px; border-top: 1px solid #e5e3dc;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Jost', sans-serif;
+    font-size: 22px; font-weight: 700; color: #1a1a2e;
+    display: block; line-height: 1; letter-spacing: 0.04em;
+  }
+  .stat-label {
+    font-size: 10px; font-weight: 500; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #9ca3af; margin-top: 4px;
+    display: block;
+  }
 `
 
 const PLACES = {
@@ -127,9 +177,36 @@ function BackBtn({ onClick }) {
   )
 }
 
+function HomePage({ onExplore }) {
+  return (
+    <div className="home">
+      <div className="fu"><GemLogo size={52} /></div>
+      <p className="home-eyebrow fu1">Powered by local Reddit discussions</p>
+      <h1 className="home-title fu2">Find the <em>hidden gems</em> of your city.</h1>
+      <p className="home-sub fu3">
+        We parse thousands of Reddit posts, extract sentiment, and rank local spots that tourists never find.
+      </p>
+      <button className="home-btn fu4" onClick={onExplore}>Start Exploring</button>
+      <div className="home-stats fu5">
+        <div className="stat">
+          <span className="stat-num">10k+</span>
+          <span className="stat-label">Posts Analyzed</span>
+        </div>
+        <div className="stat">
+          <span className="stat-num">r/GNV</span>
+          <span className="stat-label">Source Subreddit</span>
+        </div>
+        <div className="stat">
+          <span className="stat-num">Top 5</span>
+          <span className="stat-label">Per Category</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
   const [screen, setScreen] = useState("home")
-
   const goHome = () => setScreen("home")
 
   return (
@@ -137,7 +214,7 @@ export default function App() {
       <style>{css}</style>
       <Nav onHome={goHome} />
       <div className="page" key={screen}>
-        <p>Paraíba — screen: {screen}</p>
+        {screen === "home" && <HomePage onExplore={() => setScreen("category")} />}
       </div>
     </>
   )
