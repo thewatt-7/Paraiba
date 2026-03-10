@@ -1,4 +1,5 @@
 import { useState } from "react"
+import axios from "axios"
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500;600;700&display=swap');
@@ -391,7 +392,7 @@ const COMMENTS = [
   { text: "Way better than anything on the tourist lists. Authentic and affordable.", upvotes: 128, source: "r/Florida" },
 ]
 
-const ICONS = { restaurants: "🍴", cafes: "☕", parks: "🌿" }
+const ICONS = { restaurants: "🍴", cafes: "☕", attractions: "🌿" }
 
 function GemLogo({ size = 26 }) {
   return (
@@ -456,7 +457,7 @@ function CategoryPage({ onSelect, onBack }) {
   const cats = [
     { key: "restaurants", label: "Restaurants" },
     { key: "cafes", label: "Cafes" },
-    { key: "parks", label: "Parks" },
+    { key: "attractions", label: "Attractions" },
   ]
   return (
     <>
@@ -503,9 +504,7 @@ function LoadingPage({ label, step }) {
     </div>
   )
 }
-function ResultsPage({ category, label, onSelect, onBack }) {
-  const places = PLACES[category] || []
-
+function ResultsPage({ places, category, label, onSelect, onBack }) {
   if (places.length === 0) {
     return (
       <div className="error-state">
@@ -519,22 +518,23 @@ function ResultsPage({ category, label, onSelect, onBack }) {
 
   return (
     <>
+      <BackBtn onClick={onBack} />
       <div className="results-header fu">
         <p className="results-eyebrow">Hidden Gems — {label}</p>
         <h2 className="results-title">Top 5 local picks</h2>
       </div>
       {places.map((p, i) => (
         <div
-          key={p.id}
+          key={p._id}
           className={`result-card fu${Math.min(i + 1, 5)}${i === 0 ? " top" : ""}`}
           onClick={() => onSelect(p)}
         >
           <div className="result-top-row">
-            <span className="result-num">#{p.id}</span>
+            <span className="result-num">#{p.ranking}</span>
             <span className="result-badge">Hidden Gem</span>
           </div>
           <p className="result-name">{p.name}</p>
-          <p className="result-desc">{p.desc}</p>
+          <p className="result-desc">{p.description}</p>
           <span className="result-cta">View details →</span>
         </div>
       ))}
@@ -573,34 +573,38 @@ function DetailPage({ place, label, onBack }) {
           <div className="detail-meta">
             <div className="meta-item">
               <span className="meta-label">Sentiment</span>
-              <span className="meta-value">{place.sentiment}</span>
+              <span className="meta-value">{place.sentimentRating ? `${Math.round(place.sentimentRating * 100)}% positive` : "N/A"}</span>
             </div>
             <div className="meta-item">
               <span className="meta-label">Reddit Mentions</span>
-              <span className="meta-value">{place.mentions}</span>
+              <span className="meta-value">{place.mentionCount ? `${place.mentionCount} mentions` : "N/A"}</span>
             </div>
             <div className="meta-item">
               <span className="meta-label">Ranking</span>
-              <span className="meta-value">#{place.id} in {label}</span>
+              <span className="meta-value">#{place.ranking}</span>
             </div>
           </div>
         </div>
       </div>
       <p className="comments-heading fu2">What locals are saying</p>
-      {COMMENTS.map((c, i) => (
-        <div key={i} className={`comment-card fu${Math.min(i + 2, 5)}`}>
-          <div className="comment-body">
-            <span className="comment-text">"{c.text}"</span>
-            <span className="comment-source">{c.source}</span>
+      {place.comments && place.comments.length > 0 ? (
+        place.comments.map((c, i) => (
+          <div key={i} className={`comment-card fu${Math.min(i + 2, 5)}`}>
+            <div className="comment-body">
+              <span className="comment-text">"{c}"</span>
+              <span className="comment-source">r/GNV</span>
+            </div>
           </div>
-          <span className="comment-upvotes">↑ {c.upvotes}</span>
-        </div>
-      ))}
+        ))
+      ) : (
+        <p style={{color: "#9ca3af", fontSize: "13px"}}>No comments yet</p>
+      )}
     </>
   )
 }
 
 export default function App() {
+  const [places, setPlaces] = useState([])
   const [screen, setScreen] = useState("home")
   const [category, setCategory] = useState(null)
   const [label, setLabel] = useState("")
@@ -609,14 +613,26 @@ export default function App() {
 
   const goHome = () => { setScreen("home"); setLoadStep(0) }
 
-  const handleCategory = (cat, lbl) => {
-    setCategory(cat); setLabel(lbl); setLoadStep(0)
-    setScreen("loading")
-    ;[0, 1, 2, 3].forEach(i => {
-      setTimeout(() => setLoadStep(i + 1), 500 + i * 500)
-    })
-    setTimeout(() => setScreen("results"), 2600)
+  const handleCategory = async (cat, lbl) => {
+  setCategory(cat); setLabel(lbl); setLoadStep(0)
+  setScreen("loading")
+  ;[0, 1, 2, 3].forEach(i => {
+    setTimeout(() => setLoadStep(i + 1), 500 + i * 500)
+  })
+
+  try {
+    const keyword = cat === "restaurants" ? "Restaurant"
+                  : cat === "cafes" ? "Cafe"
+                  : "Attraction"
+    const res = await axios.get(`/api/paraiba?category=${keyword}`)
+    setPlaces(res.data)
+  } catch (err) {
+    console.error("Failed to fetch places:", err)
+    setPlaces([])
   }
+
+  setTimeout(() => setScreen("results"), 2600)
+}
 
   return (
     <>
@@ -626,7 +642,7 @@ export default function App() {
         {screen === "home"     && <HomePage onExplore={() => setScreen("category")} />}
         {screen === "category" && <CategoryPage onSelect={handleCategory} onBack={goHome} />}
         {screen === "loading"  && <LoadingPage label={label} step={loadStep} />}
-        {screen === "results"  && <ResultsPage category={category} label={label} onSelect={(p) => { setPlace(p); setScreen("detail") }} onBack={() => setScreen("category")} />}
+        {screen === "results" && <ResultsPage places={places} category={category} label={label} onSelect={(p) => { setPlace(p); setScreen("detail") }} onBack={() => setScreen("category")} />}
         {screen === "detail"   && <DetailPage place={place} label={label} onBack={() => setScreen("results")} />}
       </div>
     </>
