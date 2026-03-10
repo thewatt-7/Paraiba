@@ -46,3 +46,18 @@ export async function createParaibaEntry(req, res) {
     return res.status(500).json({ message: "Internal server error" });
   }
 }
+
+// Jimin
+export async function getParaibaEntries(req, res) {
+  try {
+    const { category } = req.query
+    const query = category 
+      ? { category: { $regex: category, $options: 'i' } } 
+      : {}
+    const entries = await Paraiba.find(query).sort({ ranking: -1 }).limit(5)
+    return res.status(200).json(entries)
+  } catch (error) {
+    console.log("Error in getParaibaEntries controller", error)
+    return res.status(500).json({ message: "Internal server error" })
+  }
+}

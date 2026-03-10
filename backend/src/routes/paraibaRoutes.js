@@ -1,8 +1,9 @@
 import express from "express"
-import {createParaibaEntry} from "../controllers/paraibaController.js";
+import { createParaibaEntry, getParaibaEntries } from "../controllers/paraibaController.js"
 
-const router = express.Router();
+const router = express.Router()
 
-router.post("/", createParaibaEntry);
+router.post("/", createParaibaEntry)
+router.get("/", getParaibaEntries)
 
 export default router
