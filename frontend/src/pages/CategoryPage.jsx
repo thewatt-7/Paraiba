@@ -4,6 +4,7 @@ const ICONS = { restaurants: '🍴', attractions: '🌿' }
 
 export default function CategoryPage({ onSelect, onBack }) {
   const cats = [
+    // Restaurants, cafes, and attractions
     { key: 'restaurants', label: 'Restaurants' },
     { key: 'attractions', label: 'Attractions' },
   ]

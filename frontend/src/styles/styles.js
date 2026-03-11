@@ -1,3 +1,4 @@
+// Main app styles are kept here and injected from App.jsx.
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500;600;700&display=swap');
 
@@ -321,7 +322,7 @@ const css = `
     display: flex; justify-content: space-between; padding-top: 16px;
     border-top: 1px solid #f0ede6;
   }
-  .meta-item { display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1; }
+  .meta-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
   .meta-label {
     font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
     text-transform: uppercase; color: #9ca3af;

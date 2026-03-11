@@ -1,6 +1,7 @@
 import GemLogo from '../components/GemLogo'
 
 export default function HomePage({ onExplore }) {
+  // Homepage
   return (
     <div className="home">
       <div className="fu"><GemLogo size={52} /></div>
@@ -11,17 +12,18 @@ export default function HomePage({ onExplore }) {
       </p>
       <button className="home-btn fu4" onClick={onExplore}>Start Exploring</button>
       <div className="home-stats fu5">
-        <div className="stat">
-          <span className="stat-num">10k+</span>
-          <span className="stat-label">Posts Analyzed</span>
-        </div>
+        {/* 3 stats: source subreddit, NLP sentiment analysis, and location */}
         <div className="stat">
           <span className="stat-num">r/GNV</span>
           <span className="stat-label">Source Subreddit</span>
         </div>
         <div className="stat">
-          <span className="stat-num">Top 5</span>
-          <span className="stat-label">Per Category</span>
+          <span className="stat-num">NLP</span>
+          <span className="stat-label">Sentiment Analysis</span>
+        </div>
+        <div className="stat">
+          <span className="stat-num">GNV</span>
+          <span className="stat-label">Gainesville, FL</span>
         </div>
       </div>
     </div>

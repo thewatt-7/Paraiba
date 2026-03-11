@@ -62,7 +62,7 @@ const paraibaSchema = new mongoose.Schema(
         },
       ],
       required: false,
-      default: [],
+      default: []
     },
     googleReviews: {
       type: [String],

@@ -18,6 +18,7 @@ console.log("length:", place.comments?.length)
           <p className="detail-cat">{label}</p>
           <h2 className="detail-name">{place.name}</h2>
           <p className="detail-desc">{place.description}</p>
+          {/* if field is missing, show N/A so layout stays stable */}
           <div className="detail-meta">
             <div className="meta-item">
               <span className="meta-label">Sentiment</span>
@@ -34,8 +35,12 @@ console.log("length:", place.comments?.length)
               </span>
             </div>
             <div className="meta-item">
-              <span className="meta-label">Ranking</span>
-              <span className="meta-value">#{place.ranking}</span>
+              <span className="meta-label">GoogleReviews</span>
+              <span className="meta-value">{place.reviewCount ? `${place.reviewCount} reviews` : "N/A"}</span>
+            </div>
+            <div className="meta-item">
+              <span className="meta-label">Gem Score</span>
+              <span className="meta-value">{place.ranking ? `${Math.round(place.ranking)} / 100` : "N/A"}</span>
             </div>
           </div>
         </div>
@@ -52,6 +57,20 @@ console.log("length:", place.comments?.length)
         ))
       ) : (
         <p style={{ color: "#9ca3af", fontSize: "13px" }}>No comments yet</p>
+      )}
+      {place.link && place.link.length > 0 && (
+        <a
+          href={place.link[0]}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontSize: '12px', color: '#2ec4b6', fontWeight: 600,
+            textDecoration: 'none', alignSelf: 'flex-start',
+            marginTop: '8px', letterSpacing: '0.04em'
+          }}
+        >
+          ↗ View on Reddit
+        </a>
       )}
     </>
   );

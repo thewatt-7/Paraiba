@@ -1,5 +1,7 @@
 export default function PlaceMap({ place }) {
+  // If API has no address, fallback to name + city so Maps still opens.
   const address = place.address || `${place.name}, Gainesville, FL`
+  // Keeping this simple for now: open Google Maps instead of embedding a map SDK.
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
   return (
     <div className="detail-map">
