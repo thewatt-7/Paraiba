@@ -1,4 +1,5 @@
 export default function LoadingPage({ label, step }) {
+  // `step` comes from parent. This just maps it to UI text/state.
   const steps = [
     { label: 'Scraping r/GNV posts', done: step > 0, active: step === 0 },
     { label: `Extracting ${label} mentions`, done: step > 1, active: step === 1 },
@@ -10,7 +11,9 @@ export default function LoadingPage({ label, step }) {
       <div className="loading-visual">
         <div className="loading-ring" />
         <div className="loading-ring-inner" />
-        <div className="loading-gem-sm">💎</div>
+        <div className="loading-gem-sm">
+          <img src="/paraiba icon.png" alt="gem" style={{ width: '80%', height: '80%', objectFit: 'contain' }} />
+        </div>
       </div>
       <p className="loading-title">Analyzing discussions</p>
       <p className="loading-sub">Finding hidden gems for {label}</p>

@@ -12,8 +12,10 @@ export default function DetailPage({ place, label, onBack }) {
           <p className="detail-cat">{label}</p>
           <h2 className="detail-name">{place.name}</h2>
           <p className="detail-desc">{place.description}</p>
+          {/* if field is missing, show N/A so layout stays stable */}
           <div className="detail-meta">
             <div className="meta-item">
+              {/* 4 meta fields: mention count, rating, review count, and gem score */}
               <span className="meta-label">Reddit Mentions</span>
               <span className="meta-value">{place.mentionCount ? `${place.mentionCount} mentions` : "N/A"}</span>
             </div>

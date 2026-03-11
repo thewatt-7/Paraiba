@@ -1,6 +1,7 @@
 import BackBtn from '../components/BackBtn'
 
-export default function ResultsPage({ places, category, label, onSelect, onBack }) {
+export default function ResultsPage({ places, label, onSelect, onBack }) {
+  // Simple empty state instead of showing a blank page.
   if (places.length === 0) {
     return (
       <div className="error-state">
@@ -30,7 +31,13 @@ export default function ResultsPage({ places, category, label, onSelect, onBack 
             <span className="result-badge">Hidden Gem</span>
           </div>
           <p className="result-name">{p.name}</p>
-          <p className="result-desc">
+          <p className="result-desc" style={{
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}>
             {p.description
               ? p.description
               : p.comments && p.comments.length > 0
