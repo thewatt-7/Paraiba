@@ -43,24 +43,88 @@ for loc in totLocations: #for every location in the list
         '_id': loc['_id']
     } #add the location data from collection to that name 
 
-cuisineIndicators = { #These are words to match on for cuisines
-    "bbq", "barbecue", "barbeque", "korean", "thai", "chinese", "mexican",
-    "italian", "indian", "japanese", "sushi", "vietnamese", "mediterranean",
-    "greek", "french", "caribbean", "ethiopian", "cajun", "american",
-    "southern", "ramen", "poke", "tapas", "persian", "turkish", "lebanese",
-    "salvadoran", "cuban", "jamaican", "tex-mex", "seafood", "steakhouse",
-    "burger", "pizza", "wings", "sandwiches", "bagels", "deli", "bakery",
-    "brunch", "breakfast", "noodles", "dumpling", "dim sum"
+placeCategories = { #matches on these keywords to check for a category manualy, google does not do a good job at this
+    # Cuisine indicators, can add more latter
+    "american": ["american", "southern", "soul food", "comfort food", "cajun", "creole"],
+    "bbq": ["bbq", "barbecue", "barbeque", "smokehouse", "smoked", "brisket", "ribs"],
+    "caribbean": ["caribbean", "jamaican", "jerk", "haitian", "trinidadian", "cuban", "plantain"],
+    "chinese": ["chinese", "dim sum", "cantonese", "szechuan", "hunan", "hong kong"],
+    "italian": ["italian", "pizza", "pasta", "trattoria", "osteria", "risotto", "gelato"],
+    "japanese": ["japanese", "sushi", "ramen", "izakaya", "tempura", "udon", "soba", "omakase"],
+    "korean": ["korean", "kbbq", "korean bbq", "bibimbap", "bulgogi", "tteokbokki"],
+    "mexican": ["mexican", "tex-mex", "tacos", "burrito", "enchilada", "tamale", "taqueria"],
+    "mediterranean": ["mediterranean", "greek", "turkish", "lebanese", "persian", "falafel", "hummus", "shawarma"],
+    "indian": ["indian", "curry", "tandoori", "biryani", "naan", "dosa", "chai"],
+    "vietnamese": ["vietnamese", "pho", "banh mi", "spring rolls", "bun bo hue"],
+    "thai": ["thai", "pad thai", "green curry", "tom yum", "satay"],
+    "seafood": ["seafood", "fish", "shrimp", "crab", "lobster", "oyster", "clam", "boil"],
+    "steakhouse": ["steakhouse", "steak", "steaks", "chophouse", "sirloin", "ribeye"],
+    "burgers": ["burger", "burgers", "smash burger", "cheeseburger"],
+    "sandwiches": ["sandwich", "sandwiches", "sub", "hoagie", "cheesesteak", "deli"],
+    "bakery": ["bakery", "pastry", "croissant", "bagel", "bagels", "donuts", "bread"],
+    "cafe": ["cafe", "café", "coffee", "espresso", "latte", "brunch", "breakfast"],
+    "dessert": ["ice cream", "gelato", "frozen yogurt", "dessert", "sweets", "chocolate"],
+    "brewery": ["brewery", "brewpub", "craft beer", "taproom", "ales", "lager"],
+    "winery": ["winery", "wine bar", "wine", "vineyard", "tasting room"],
+    "bar": ["bar", "lounge", "cocktail", "speakeasy", "pub", "tavern"],
+
+    # Outdoor and nature categories, can add more later
+    "hiking": ["hiking", "hike", "trail", "trails", "trailhead", "backpacking", "trekking"],
+    "park": ["park", "preserve", "greenway", "recreation area", "national park", "state park"],
+    "water sports": ["kayak", "canoe", "paddleboard", "paddle board", "rowing", "tubing", "rafting"],
+    "swimming": ["swimming", "swim", "pool", "splash pad", "springs", "swimming hole"],
+    "cycling": ["cycling", "biking", "bike trail", "mountain bike", "bmx"],
+    "camping": ["camping", "campground", "campsite", "glamping", "rv park"],
+    "wildlife": ["wildlife", "birds", "birdwatching", "birding", "gators", "deer", "nature walk"],
+    "water body": ["lake", "river", "creek", "pond", "wetlands", "marsh", "spring", "beach"],
+
+    # Accessibility
+    "wheelchair accessible": ["wheelchair", "accessible", "ada", "handicap", "mobility", "paved trail", "flat trail"],
+
+    # Arts and Entertainment
+    "museum": ["museum", "history", "science center", "exhibit", "gallery", "art museum"],
+    "performing arts": ["theater", "theatre", "cinema", "movie", "comedy", "live music", "concert", "opera"],
+    "arcade": ["arcade", "bowling", "mini golf", "go kart", "axe throwing", "escape room"],
+
+    # Fitness
+    "fitness": ["gym", "fitness", "yoga", "pilates", "crossfit", "weightlifting", "rock climbing", "skatepark"],
+
+    # Shopping & Markets
+    "market": ["market", "farmer's market", "farmers market", "food hall", "food truck", "pop up"],
 }
 
-def getCuisine(name, description, reviews):
-    #look within name, description, and reviews for cuisines
-    text = " ".join([ #join the name if found in the name, description, or reviews
-        name or "", description or "", " ".join(r.get('text', '') for r in reviews)
+def getCategory(name, description, reviews, googleTypes): #look at name, description, review, and google types to see if it can match a category
+    text = " ".join([name or "", description or "", " ".join(r.get('text', '') for r in reviews)," ".join(googleTypes or [])
     ]).lower()
 
-    cuisineFound = [cuisine for cuisine in cuisineIndicators if cuisine in text] 
-    return cuisineFound if cuisineFound else ["general"] #return general for cuisine if nothing matches
+    found = [] #add any keywords
+    for category, keywords in placeCategories.items(): #look within keywordsd
+        if any(keyword in text for keyword in keywords):  # if any keyword for this category matches
+            found.append(category) #get the category 
+
+    outdoorCategories = {"hiking", "park", "water sports", "swimming", "cycling", "camping", "wildlife", "water body"} #categories from above that match outdoors
+    indoorCategories = {"museum", "performing arts", "arcade", "fitness", "bakery", "cafe", "brewery", "winery", "bar"} #categories from above that match indoors
+
+    outdoorKeywords = ["outside", "outdoor", "open air", "open-air", "patio", "rooftop"] #additional outdoor keywords that may represent it better
+    indoorKeywords = ["inside", "indoor", "air conditioned", "air-conditioned", "cozy", "intimate"] #additional indoor keywords that may represent it better
+
+    isOutdoor = (
+        any(cat in found for cat in outdoorCategories) or #if any categories are in outdoor categories
+        any(keyword in text for keyword in outdoorKeywords) #or any words for outdoors are in then mark as outdoor
+    )
+    isIndoor = (
+        any(cat in found for cat in indoorCategories) or #if any categories are in indoor categories
+        any(keyword in text for keyword in indoorKeywords) #or any words for indoors are in then mark as indoor
+    )
+
+    if isOutdoor and isIndoor:
+        found.append("indoor/outdoor")  #indoor/outdoor has both  then add
+    elif isOutdoor:
+        found.append("outdoor") #only outdoors then add
+    elif isIndoor:
+        found.append("indoor") #only indoors then add
+
+    return found if found else ["general"] #if none matches then it gets put in general category
 
 def matchLocs(spaCy, existing): #this is a helper function to match spacy names to place API names 
     cleaned = spaCy.lower() #get spacy extracted name in lowercase
@@ -165,7 +229,7 @@ if newLocations:  # if the name is new to the pariabas collection
                 sentimentScore=sentimentFull['compound'] if sentimentFull else 0 #get vader sentiment
             )
 
-            cuisineType = getCuisine(
+            categoryType = getCategory(
                 gLoc['name'], gLoc.get('description'), gLoc.get('googlereviews', []) #run get cuisine to get the cuisine, if it does not find one it is general
             )
  
@@ -185,7 +249,7 @@ if newLocations:  # if the name is new to the pariabas collection
                     'comments': [{'text': c['text']} for c in matching['comments']], #comments from comments collection, gets only the text from above
                     'googleReviews': gLoc.get('googlereviews', []), #reviews are comments from places API
                     'link': [comment['link'] for comment in matching['comments']], #link from comments collection and returns all associated links
-                    'cuisineType': cuisineType, #get cuisine type
+                    'categoryType': categoryType, #get category
                     'servesBreakfast': gLoc.get('serves_breakfast', False), #google has the ones below
                     'servesBrunch': gLoc.get('serves_brunch', False), #All these do are return true or false
                     'servesLunch': gLoc.get('serves_lunch', False),
