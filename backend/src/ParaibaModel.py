@@ -19,7 +19,7 @@ db = client["test"] # the database that houses the info is in test
 redditCollection = db["comments"] #this is where the unprocessed, scraped Reddit API data is
 paraibaCollection = db["paraibas"] #this collection is where the info from this file will go
 
-TEST = True
+TEST = False
 if TEST:
     # Test with hardcoded data
     comments = [
@@ -42,6 +42,89 @@ for loc in totLocations: #for every location in the list
         'name': loc['name'],
         '_id': loc['_id']
     } #add the location data from collection to that name 
+
+placeCategories = { #matches on these keywords to check for a category manualy, google does not do a good job at this
+    # Cuisine indicators, can add more latter
+    "american": ["american", "southern", "soul food", "comfort food", "cajun", "creole"],
+    "bbq": ["bbq", "barbecue", "barbeque", "smokehouse", "smoked", "brisket", "ribs"],
+    "caribbean": ["caribbean", "jamaican", "jerk", "haitian", "trinidadian", "cuban", "plantain"],
+    "chinese": ["chinese", "dim sum", "cantonese", "szechuan", "hunan", "hong kong"],
+    "italian": ["italian", "pizza", "pasta", "trattoria", "osteria", "risotto", "gelato"],
+    "japanese": ["japanese", "sushi", "ramen", "izakaya", "tempura", "udon", "soba", "omakase"],
+    "korean": ["korean", "kbbq", "korean bbq", "bibimbap", "bulgogi", "tteokbokki"],
+    "mexican": ["mexican", "tex-mex", "tacos", "burrito", "enchilada", "tamale", "taqueria"],
+    "mediterranean": ["mediterranean", "greek", "turkish", "lebanese", "persian", "falafel", "hummus", "shawarma"],
+    "indian": ["indian", "curry", "tandoori", "biryani", "naan", "dosa", "chai"],
+    "vietnamese": ["vietnamese", "pho", "banh mi", "spring rolls", "bun bo hue"],
+    "thai": ["thai", "pad thai", "green curry", "tom yum", "satay"],
+    "seafood": ["seafood", "fish", "shrimp", "crab", "lobster", "oyster", "clam", "boil"],
+    "steakhouse": ["steakhouse", "steak", "steaks", "chophouse", "sirloin", "ribeye"],
+    "burgers": ["burger", "burgers", "smash burger", "cheeseburger"],
+    "sandwiches": ["sandwich", "sandwiches", "sub", "hoagie", "cheesesteak", "deli"],
+    "bakery": ["bakery", "pastry", "croissant", "bagel", "bagels", "donuts", "bread"],
+    "cafe": ["cafe", "café", "coffee", "espresso", "latte", "brunch", "breakfast"],
+    "dessert": ["ice cream", "gelato", "frozen yogurt", "dessert", "sweets", "chocolate"],
+    "brewery": ["brewery", "brewpub", "craft beer", "taproom", "ales", "lager"],
+    "winery": ["winery", "wine bar", "wine", "vineyard", "tasting room"],
+    "bar": ["bar", "lounge", "cocktail", "speakeasy", "pub", "tavern"],
+
+    # Outdoor and nature categories, can add more later
+    "hiking": ["hiking", "hike", "trail", "trails", "trailhead", "backpacking", "trekking"],
+    "park": ["park", "preserve", "greenway", "recreation area", "national park", "state park"],
+    "water sports": ["kayak", "canoe", "paddleboard", "paddle board", "rowing", "tubing", "rafting"],
+    "swimming": ["swimming", "swim", "pool", "splash pad", "springs", "swimming hole"],
+    "cycling": ["cycling", "biking", "bike trail", "mountain bike", "bmx"],
+    "camping": ["camping", "campground", "campsite", "glamping", "rv park"],
+    "wildlife": ["wildlife", "birds", "birdwatching", "birding", "gators", "deer", "nature walk"],
+    "water body": ["lake", "river", "creek", "pond", "wetlands", "marsh", "spring", "beach"],
+
+    # Accessibility
+    "wheelchair accessible": ["wheelchair", "accessible", "ada", "handicap", "mobility", "paved trail", "flat trail"],
+
+    # Arts and Entertainment
+    "museum": ["museum", "history", "science center", "exhibit", "gallery", "art museum"],
+    "performing arts": ["theater", "theatre", "cinema", "movie", "comedy", "live music", "concert", "opera"],
+    "arcade": ["arcade", "bowling", "mini golf", "go kart", "axe throwing", "escape room"],
+
+    # Fitness
+    "fitness": ["gym", "fitness", "yoga", "pilates", "crossfit", "weightlifting", "rock climbing", "skatepark"],
+
+    # Shopping & Markets
+    "market": ["market", "farmer's market", "farmers market", "food hall", "food truck", "pop up"],
+}
+
+def getCategory(name, description, reviews, googleTypes): #look at name, description, review, and google types to see if it can match a category
+    text = " ".join([name or "", description or "", " ".join(r.get('text', '') for r in reviews)," ".join(googleTypes or [])
+    ]).lower()
+
+    found = [] #add any keywords
+    for category, keywords in placeCategories.items(): #look within keywordsd
+        if any(keyword in text for keyword in keywords):  # if any keyword for this category matches
+            found.append(category) #get the category 
+
+    outdoorCategories = {"hiking", "park", "water sports", "swimming", "cycling", "camping", "wildlife", "water body"} #categories from above that match outdoors
+    indoorCategories = {"museum", "performing arts", "arcade", "fitness", "bakery", "cafe", "brewery", "winery", "bar"} #categories from above that match indoors
+
+    outdoorKeywords = ["outside", "outdoor", "open air", "open-air", "patio", "rooftop"] #additional outdoor keywords that may represent it better
+    indoorKeywords = ["inside", "indoor", "air conditioned", "air-conditioned", "cozy", "intimate"] #additional indoor keywords that may represent it better
+
+    isOutdoor = (
+        any(cat in found for cat in outdoorCategories) or #if any categories are in outdoor categories
+        any(keyword in text for keyword in outdoorKeywords) #or any words for outdoors are in then mark as outdoor
+    )
+    isIndoor = (
+        any(cat in found for cat in indoorCategories) or #if any categories are in indoor categories
+        any(keyword in text for keyword in indoorKeywords) #or any words for indoors are in then mark as indoor
+    )
+
+    if isOutdoor and isIndoor:
+        found.append("indoor/outdoor")  #indoor/outdoor has both  then add
+    elif isOutdoor:
+        found.append("outdoor") #only outdoors then add
+    elif isIndoor:
+        found.append("indoor") #only indoors then add
+
+    return found if found else ["general"] #if none matches then it gets put in general category
 
 def matchLocs(spaCy, existing): #this is a helper function to match spacy names to place API names 
     cleaned = spaCy.lower() #get spacy extracted name in lowercase
@@ -67,8 +150,8 @@ for i, comment in enumerate(comments, 1): #for every comment
     #above is to be used later to put into paraibas collection
     
     spaCyEntities = spaCy_full(commentText) #extract the name(s) with spacy
-    for i in spaCyEntities:
-        print(f"Locs found: {i}")
+    for loc in spaCyEntities: #had to change from i to loc: overwritten i a couple of times
+        print(f"Locs found: {loc}")
     
     if not spaCyEntities: #if not in the spaCyEntities list then continue
         continue
@@ -92,7 +175,12 @@ for i, comment in enumerate(comments, 1): #for every comment
             'text': commentText,
             'upvotes': upvotes,
             'link': link
-        })      
+        }) 
+
+    redditCollection.update_one( #issue with comments duplicating, so update the reddit comments here
+        {'_id': comment['_id']},
+        {'$set': {'processed': True}}
+    )     
 
 # Separate new vs existing locations
 newLocations = [name for cleanName, name in allLocations.items() if cleanName not in existingLocations] #if the name is in the total locations and not in paraibas collection then add to newLocations
@@ -140,23 +228,41 @@ if newLocations:  # if the name is new to the pariabas collection
                 averageUpvotes=avgUpVote, #get average up vote
                 sentimentScore=sentimentFull['compound'] if sentimentFull else 0 #get vader sentiment
             )
+
+            categoryType = getCategory(
+                gLoc['name'], gLoc.get('description'), gLoc.get('googlereviews', []) #run get cuisine to get the cuisine, if it does not find one it is general
+            )
  
-            paraibaCollection.insert_one({
-                'name': gLoc['name'], #name from places API
-                'address': gLoc['address'], #address from places API
-                'category': gLoc['category'], #category from places API
-                'reviewCount': gLoc['review_count'], #review count from places API
-                'rating': gLoc['rating'], #rating from places API
-                'description': gLoc.get('description'), #description from places API
-                'sentimentrating': sentimentFull['compound'] if sentimentFull else None, #This is a call from VADER and gets the compound number
-                'ranking': rankingResult['Paraíba Score'], #This is a call from ranking model
-                'upvotes': sum(comment['upvotes'] for comment in matching['comments']), #upvotes from comments collection
-                'mentionCount': len(matching['comments']), #This currently is not in the collection
-                'location': currentLocation, #this comes from description inputted into Places API, not in collection
-                'comments': [{'text': c['text']} for c in matching['comments']], #comments from comments collection, gets only the text from above
-                'googleReviews': gLoc.get('googlereviews', []), #reviews are comments from places API
-                'link': [comment['link'] for comment in matching['comments']], #link from comments collection and returns all associated links
-            }) 
+            paraibaCollection.update_one( #Changed from Insert to update to ensure duplicates are handled
+                {'name': gLoc['name']}, #name from places API, matches on the name
+                {'$setOnInsert': { #sets on insert if the document is being inserted for the first time
+                    'address': gLoc['address'], #address from places API
+                    'category': gLoc['category'], #category from places API
+                    'reviewCount': gLoc['review_count'], #review count from places API
+                    'rating': gLoc['rating'], #rating from places API
+                    'description': gLoc.get('description'), #description from places API
+                    'sentimentRating': sentimentFull['compound'] if sentimentFull else None, #This is a call from VADER and gets the compound number
+                    'ranking': rankingResult['Paraíba Score'], #This is a call from ranking model
+                    'upvotes': sum(comment['upvotes'] for comment in matching['comments']), #upvotes from comments collection
+                    'mentionCount': len(matching['comments']), #This currently is not in the collection
+                    'location': currentLocation, #this comes from description inputted into Places API, not in collection
+                    'comments': [{'text': c['text']} for c in matching['comments']], #comments from comments collection, gets only the text from above
+                    'googleReviews': gLoc.get('googlereviews', []), #reviews are comments from places API
+                    'link': [comment['link'] for comment in matching['comments']], #link from comments collection and returns all associated links
+                    'categoryType': categoryType, #get category
+                    'servesBreakfast': gLoc.get('serves_breakfast', False), #google has the ones below
+                    'servesBrunch': gLoc.get('serves_brunch', False), #All these do are return true or false
+                    'servesLunch': gLoc.get('serves_lunch', False),
+                    'servesDinner': gLoc.get('serves_dinner', False),
+                    'servesBeer': gLoc.get('serves_beer', False),
+                    'servesWine': gLoc.get('serves_wine', False),
+                    'servesVegetarian': gLoc.get('serves_vegetarian', False),
+                    'dineIn': gLoc.get('dine_in', False),
+                    'takeout': gLoc.get('takeout', False),
+                    'delivery': gLoc.get('delivery', False),
+                 }},
+                upsert=True #protect against duplicates
+            ) 
         else:
             print(f"No match found for {gLoc['name']}")
 
@@ -182,6 +288,7 @@ if updateTheLocs:
         getAllComments = [comment['text'] for comment in findOldComms.get('comments', [])] # get all existing comments at the mongo ID
 
         getAllComments.extend([comment['text'] for comment in newComments]) #add the new comments to the old ones
+        sentimentScore = analyzer(getAllComments) #get vader score of all associated comments
 
         rankingResult = paraibaScore( #same as above
             googleRating=exisitingLocInfo.get('rating', 0) if isinstance(exisitingLocInfo.get('rating'), (int, float)) else 0, #get rating
@@ -197,12 +304,9 @@ if updateTheLocs:
             {
                 '$inc': {'upvotes': totUpvotes, 'mentionCount': len(newComments)}, #put in total upvotes and mention count which is the number of comments that mention it
                 '$push': {'comments': {'$each': newComments}}, #append the new comments
-                '$set': {'sentimentrating': sentimentScore['compound'], 'ranking': rankingResult['Paraíba Score'] } #set the new vader score in place of the old one as well as paraiba
+                '$set': {'sentimentRating': sentimentScore['compound'], 'ranking': rankingResult['Paraíba Score'] } #set the new vader score in place of the old one as well as paraiba
             }
         )
-        redditCollection.update_one( #this updates the comment to flag it to be true
-            {'_id': comment['_id']},
-            {'$set': {'processed': True}}
-        )
+        #got rid of updatin the processed flag as true here and moved it up
 
 client.close() #close mongo
