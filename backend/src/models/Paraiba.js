@@ -17,7 +17,7 @@ const paraibaSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    cuisineType: {
+    categoryType: {
       type: String,
       required: false,
     },
