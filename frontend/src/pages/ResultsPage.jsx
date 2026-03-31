@@ -42,12 +42,7 @@ const RESTAURANT_GROUPS = [
       { key: 'indoor/outdoor', label: 'Indoor & Outdoor', icon: '⛅' },
     ],
   },
-  {
-    group: 'Accessibility',
-    cats: [
-      { key: 'wheelchair accessible', label: 'Wheelchair Accessible', icon: '♿' },
-    ],
-  },
+  
 ]
 
 const ATTRACTION_GROUPS = [
@@ -82,12 +77,7 @@ const ATTRACTION_GROUPS = [
       { key: 'indoor/outdoor', label: 'Indoor & Outdoor', icon: '⛅' },
     ],
   },
-  {
-    group: 'Accessibility',
-    cats: [
-      { key: 'wheelchair accessible', label: 'Wheelchair Accessible', icon: '♿' },
-    ],
-  },
+  
 ]
 
 const COUNTS = [5, 10, 15, 20]
