@@ -1,10 +1,10 @@
 // Main app styles are kept here and injected from App.jsx.
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body, #root { width: 100%; height: 100%; }
-  body { background: #f7f6f2; font-family: 'Jost', sans-serif; color: #1a1a2e; -webkit-font-smoothing: antialiased; }
+  body { background: #faf9f6; font-family: 'Manrope', sans-serif; color: #1a1a2e; -webkit-font-smoothing: antialiased; }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
@@ -26,7 +26,7 @@ const css = `
     display: flex; justify-content: center; align-items: center;
     padding: 18px 40px;
     border-bottom: 1px solid rgba(26,26,46,0.07);
-    background: rgba(247,246,242,0.9);
+    background: rgba(250,249,246,0.9);
     backdrop-filter: blur(20px);
   }
   .nav-logo {
@@ -34,7 +34,7 @@ const css = `
     cursor: pointer; user-select: none;
   }
   .nav-logo-text {
-    font-family: 'Libre Baskerville', serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 20px; font-weight: 700;
     letter-spacing: 0.01em; color: #1a1a2e;
     line-height: 1;
@@ -53,7 +53,7 @@ const css = `
   .back {
     display: flex; align-items: center; gap: 8px;
     background: none; border: none; cursor: pointer;
-    font-family: 'Jost', sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
     text-transform: uppercase; color: #9ca3af;
     padding: 0; align-self: flex-start;
@@ -72,12 +72,12 @@ const css = `
     text-transform: uppercase; color: #2ec4b6; margin-bottom: 18px;
   }
   .home-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Manrope', sans-serif;
     font-size: clamp(32px, 5vw, 48px); font-weight: 900;
     line-height: 1.1; color: #1a1a2e; margin-bottom: 18px;
     white-space: nowrap;
   }
-  .home-title em { font-style: italic; color: #2ec4b6; font-weight: 700; }
+  .home-title em { font-style: normal; color: #2ec4b6; font-weight: 700; }
   .home-sub {
     font-size: 14px; color: #6b7280; line-height: 1.8;
     max-width: 360px; font-weight: 300; margin-bottom: 36px;
@@ -85,7 +85,7 @@ const css = `
   .home-btn {
     padding: 15px 48px; background: #1a1a2e; color: #f7f6f2;
     border: none; border-radius: 3px;
-    font-family: 'Jost', sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
     text-transform: uppercase; cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
@@ -101,7 +101,7 @@ const css = `
   }
   .stat { text-align: center; }
   .stat-num {
-    font-family: 'Jost', sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 22px; font-weight: 700; color: #1a1a2e;
     display: block; line-height: 1; letter-spacing: 0.04em;
   }
@@ -118,7 +118,7 @@ const css = `
     text-transform: uppercase; color: #2ec4b6; margin-bottom: 10px;
   }
   .cat-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 28px; font-weight: 900; color: #1a1a2e;
   }
   .cat-grid {
@@ -179,7 +179,7 @@ const css = `
   }
   .loading-gem-sm { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 20px; }
   .loading-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 24px; font-weight: 900; color: #1a1a2e; margin-bottom: 10px;
   }
   .loading-sub {
@@ -208,7 +208,7 @@ const css = `
     text-transform: uppercase; color: #2ec4b6; margin-bottom: 8px;
   }
   .results-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 28px; font-weight: 900; color: #1a1a2e;
   }
   .result-card {
@@ -223,7 +223,7 @@ const css = `
     box-shadow: 0 10px 30px rgba(0,0,0,0.07);
     border-color: #2ec4b6;
   }
-  .results-title span { font-style: italic; color: #2ec4b6; }
+  .results-title span { font-style: normal; color: #2ec4b6; }
   .result-name {
     font-size: 16px; font-weight: 600; color: #1a1a2e; line-height: 1.3;
     margin-bottom: 0;
@@ -286,12 +286,12 @@ const css = `
     text-align: center; gap: 16px;
   }
   .error-icon { font-size: 40px; }
-  .error-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: #1a1a2e; }
+  .error-title { font-family: 'Manrope', sans-serif; font-size: 22px; font-weight: 900; color: #1a1a2e; }
   .error-sub { font-size: 13px; color: #6b7280; font-weight: 300; }
   .error-btn {
     margin-top: 8px; padding: 12px 32px;
     background: #1a1a2e; color: #f7f6f2; border: none;
-    border-radius: 3px; font-family: 'Jost', sans-serif;
+    border-radius: 3px; font-family: 'Manrope', sans-serif;
     font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
     text-transform: uppercase; cursor: pointer;
   }
@@ -312,8 +312,9 @@ const css = `
     text-transform: uppercase; color: #2ec4b6; margin-bottom: 10px;
   }
   .detail-name {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Manrope', sans-serif;
     font-size: clamp(26px, 4vw, 40px); font-weight: 900; color: #1a1a2e;
+    letter-spacing: -0.03em;
     line-height: 1.08; margin-bottom: 14px;
   }
   .detail-tag-row {
@@ -327,7 +328,7 @@ const css = `
     text-transform: uppercase;
   }
   .detail-desc {
-    font-size: px; color: #6b7280; line-height: 1.9; font-weight: 300;
+    font-size: 14px; color: #6b7280; line-height: 1.9; font-weight: 300;
   }
 
   /* Gem Score callout — primary metric, visually dominant */
@@ -335,26 +336,27 @@ const css = `
     flex-shrink: 0; width: 158px;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    padding: 24px 16px 20px;
-    background: #fff; border-radius: 20px;
-    border: 3px solid rgba(46,196,182,0.28);
-    box-shadow: 0 10px 24px rgba(26,26,46,0.05);
+    gap: 4px;
+    padding: 22px 18px 18px;
+    background: rgba(255,255,255,0.92); border-radius: 20px;
+    border: 1.5px solid rgba(46,196,182,0.22);
+    box-shadow: 0 8px 20px rgba(26,26,46,0.04);
     text-align: center;
   }
   .detail-score-label {
-    font-size: 9px; font-weight: 700; letter-spacing: 0.16em;
+    font-size: 9px; font-weight: 600; letter-spacing: 0.12em;
     text-transform: uppercase; color: #9ca3af;
-    margin-bottom: 10px;
-    display: inline-flex; align-items: center; gap: 5px;
+    margin-bottom: 6px;
+    display: inline-flex; align-items: center; gap: 6px;
   }
   .detail-score-number {
-    font-family: 'Jost', sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 56px; font-weight: 900; line-height: 1;
-    color: #1a1a2e; letter-spacing: -0.03em;
+    color: #1a1a2e; letter-spacing: -0.04em;
   }
   .detail-score-sub {
     font-size: 10px; color: #9ca3af; font-weight: 500;
-    letter-spacing: 0.08em; margin-top: 6px;
+    letter-spacing: 0.04em; margin-top: 2px;
     text-transform: uppercase;
   }
 
@@ -394,7 +396,7 @@ const css = `
     border: 1.5px solid #ece9e1; border-radius: 16px;
     padding: 22px 24px;
     display: flex; align-items: center;
-    margin-bottom: 20px; overflow-x: auto;
+    overflow-x: auto;
   }
   .detail-stat {
     flex: 1; min-width: 0;
@@ -420,10 +422,26 @@ const css = `
     flex-shrink: 0; margin: 4px 0;
   }
 
+  .detail-section-rule {
+    width: 100%;
+    height: 1px;
+    margin: 24px 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(26,26,46,0.06) 12%,
+      rgba(26,26,46,0.06) 88%,
+      transparent 100%
+    );
+  }
+
   /* Map */
+  .detail-map-wrap {
+    width: 100%;
+  }
   .detail-map-section {
     width: 100%; border-radius: 16px; overflow: hidden;
-    border: 1.5px solid #ece9e1; margin-bottom: 32px;
+    border: 1.5px solid #ece9e1;
   }
   .detail-map {
     width: 100%; height: 220px;
@@ -441,11 +459,15 @@ const css = `
     font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
     text-transform: uppercase; color: #9ca3af;
   }
-  .map-placeholder-address { font-size: 12px; color: #2ec4b6; font-weight: 500; }
+  .map-placeholder-address {
+    font-size: 12px; color: #2ec4b6; font-weight: 500;
+    max-width: 100%; padding: 0 18px; text-align: center;
+    overflow-wrap: anywhere;
+  }
   .map-open-btn {
     position: absolute; bottom: 12px; right: 12px;
     background: #1a1a2e; color: #f7f6f2;
-    font-family: 'Jost', sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
     text-transform: uppercase; border: none; border-radius: 4px;
     padding: 9px 16px; cursor: pointer; transition: background 0.2s;
@@ -488,7 +510,7 @@ const css = `
     box-shadow: 0 10px 24px rgba(26,26,46,0.05);
   }
   .comment-quote-mark {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 36px; line-height: 1; color: rgba(46,196,182,0.4);
     flex-shrink: 0; margin-top: -4px;
   }
@@ -532,7 +554,7 @@ const css = `
   }
   .sidebar-clear-btn {
     background: none; border: none; cursor: pointer;
-    font-family: 'Jost', sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 10px; font-weight: 600; color: #2ec4b6;
     padding: 0; transition: opacity 0.2s;
   }
@@ -546,7 +568,7 @@ const css = `
     width: 100%; padding: 10px 32px 10px 12px;
     background: #fff; border: 1.5px solid #ece9e1;
     border-radius: 10px; cursor: pointer;
-    font-family: 'Jost', sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 13px; font-weight: 600; color: #1a1a2e;
     appearance: none; -webkit-appearance: none;
     transition: border-color 0.15s;
@@ -577,7 +599,7 @@ const css = `
     display: flex; align-items: center; justify-content: flex-start;
     min-height: 46px; padding: 5px 0; border-radius: 9px;
     background: none; border: none; cursor: pointer;
-    font-family: 'Jost', sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 11px; font-weight: 500; color: #6b7280;
     text-align: left; transition: all 0.15s; width: 100%;
   }
@@ -616,7 +638,7 @@ const css = `
       align-self: flex-start; margin-bottom: 14px;
       padding: 8px 16px; border-radius: 20px;
       background: #fff; border: 1.5px solid #ece9e1;
-      font-family: 'Jost', sans-serif;
+      font-family: 'Manrope', sans-serif;
       font-size: 11px; font-weight: 600; color: #1a1a2e;
       cursor: pointer; transition: border-color 0.2s;
     }

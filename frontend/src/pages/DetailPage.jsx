@@ -106,11 +106,18 @@ export default function DetailPage({ place, label, onBack }) {
           <span className="detail-stat-label">Address</span>
         </div>
       </div>
+      <div className="detail-section-rule fu5" aria-hidden="true" />
 
       {/* ── MAP ── */}
-      <div className="detail-map-section fu5">
-        <PlaceMap place={place} />
+      <div className="detail-map-wrap fu5">
+        <div className="detail-section-header">
+          <p className="comments-heading">Location</p>
+        </div>
+        <div className="detail-map-section">
+          <PlaceMap place={place} />
+        </div>
       </div>
+      <div className="detail-section-rule" aria-hidden="true" />
 
       {/* ── COMMENTS ── */}
       <div className="detail-comments-section">
